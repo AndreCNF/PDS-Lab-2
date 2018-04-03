@@ -45,9 +45,7 @@ disp(keys_str);
 
 %% Teste para varios parametros diferentes
 
-% Muitos digitos da erros no espectrograma?
-% phoneKeys = ['5', '3', '4', '1', '1', '2', '7', '8', '7', '*', '0', '9', '#', '6'];
-phoneKeys = ['6', '3', '4', '*'];
+phoneKeys = ['5', '3', '4', '1', '1', '2', '7', '8', '7', '*', '0', '9', '#', '6'];
 toneDuration = 40;
 pauseDuration = 40;
 amplitude = 1;

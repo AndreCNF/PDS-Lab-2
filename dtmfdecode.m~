@@ -1,8 +1,8 @@
 % Find the true 3D peaks / local maxima in a dtmf
-function keys_str = dtmfdecode(S, F, T)
+function true_peaks = dtmfdecode(S, F, T)
     
     % Frequency threshold
-    freq_thr = 10;
+    freq_thr = 0.02;
     
     F11 = 546.1;
     F12 = 607.5;
@@ -16,7 +16,7 @@ function keys_str = dtmfdecode(S, F, T)
     true_peaks = zeros(length(F), length(T));
     
     % String with the detected keys sequence
-    keys_str = strings;
+    keys_str = '';
     
     % Check for peaks that are reagional maxima
     for i = 1:length(F)
@@ -82,50 +82,22 @@ function keys_str = dtmfdecode(S, F, T)
     [row,col] = find(true_peaks);
     
     % Detect keys based on the peaks' frequencies
-    for i = 1:2:length(row)
-       if abs(F(row(i))*1000 - F11) < freq_thr
-           if abs(F(row(i+1))*1000 - F21) < freq_thr
-               keys_str = strcat(keys_str, '1');
+    for i = 1:length(row)
+       if abs(F(row)*1000 - F11) < freq_thr
+           if abs(F(row)*1000 - F11) < freq_thr
            
-           elseif abs(F(row(i+1))*1000 - F22) < freq_thr
-               keys_str = strcat(keys_str, '2');
-                
-           elseif abs(F(row(i+1))*1000 - F23) < freq_thr
-               keys_str = strcat(keys_str, '3');
+           
+           elseif abs(F(row)*1000 - F12) < freq_thr
+
+           elseif abs(F(row)*1000 - F13) < freq_thr
+               
            end
            
-       elseif abs(F(row(i))*1000 - F12) < freq_thr
-           if abs(F(row(i+1))*1000 - F21) < freq_thr
-               keys_str = strcat(keys_str, '4');
+       elseif abs(F(row)*1000 - F12) < freq_thr
            
-           elseif abs(F(row(i+1))*1000 - F22) < freq_thr
-               keys_str = strcat(keys_str, '5');
-                
-           elseif abs(F(row(i+1))*1000 - F23) < freq_thr
-               keys_str = strcat(keys_str, '6');
-           end
+       elseif abs(F(row)*1000 - F13) < freq_thr
            
-       elseif abs(F(row(i))*1000 - F13) < freq_thr
-           if abs(F(row(i+1))*1000 - F21) < freq_thr
-               keys_str = strcat(keys_str, '7');
-           
-           elseif abs(F(row(i+1))*1000 - F22) < freq_thr
-               keys_str = strcat(keys_str, '8');
-                
-           elseif abs(F(row(i+1))*1000 - F23) < freq_thr
-               keys_str = strcat(keys_str, '9');
-           end
-           
-       elseif abs(F(row(i))*1000 - F14) < freq_thr
-           if abs(F(row(i+1))*1000 - F21) < freq_thr
-               keys_str = strcat(keys_str, '*');
-           
-           elseif abs(F(row(i+1))*1000 - F22) < freq_thr
-               keys_str = strcat(keys_str, '0');
-                
-           elseif abs(F(row(i+1))*1000 - F23) < freq_thr
-               keys_str = strcat(keys_str, '#');
-           end
+       elseif abs(F(row)*1000 - F14) < freq_thr
            
        end
     end
