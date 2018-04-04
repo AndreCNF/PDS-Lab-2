@@ -4,6 +4,20 @@
 % Andre Ferreira 81715
 % Jose Miragaia 81567
 
+%% R-b)
+% Primeiro, comecamos por detectar experimentalmente quais s?o realmente as
+% frequencias das sinusoides que caracterizam as teclas em dtmf. Tendo em
+% conta essa informacao, detetectam-se os picos do espectrograma, que
+% corresponderao aos pulsos das sinusoides, e comparam-se com as
+% combinacoes de frequencias possiveis para cada digito. Em processos
+% intermedios, utilizam-se mecanismos para remover picos solitarios (cada
+% tecla tem que ter obrigatoriamente um par de pulsos correspondente a um
+% par de sinusoides) e picos de ruido / picos falsos (picos de menor
+% amplitude de frequencia semelhante a dos picos verdadeiros). Os picos sao
+% detectados atraves de um treshold de magnitude do espectrograma e uma
+% comparacao com a magnitude dos pontos vizinhos, segundo uma grelha na
+% escala do tempo e da frequencia.
+
 %% Teste para observar valores experimentais de frequencias de sinusoides
 
 phoneKeys = ['1', '5', '9', '#'];
@@ -98,3 +112,10 @@ phoneSignal = dtmfencode(phoneKeys, toneDuration, pauseDuration, amplitude, nois
 [S,F,T] = spectrogram(phoneSignal);
 keys_str = dtmfdecode(S, F, T);
 disp(strcat('Teste 6: ', keys_str));
+
+%% R-d)
+
+[y, Fs] = audioread('touchtone.wav');
+[S,F,T] = spectrogram(y');
+keys_str = dtmfdecode(S, F, T);
+disp(strcat('Touchstone keys: ', keys_str));

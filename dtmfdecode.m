@@ -2,7 +2,10 @@
 function keys_str = dtmfdecode(S, F, T)
     
     % Frequency threshold
-    freq_thr = 10;
+    freq_thr = 30;
+    
+    % Noise threshold
+    noise_thr = 200;
     
     F11 = 546.1;
     F12 = 607.5;
@@ -22,7 +25,7 @@ function keys_str = dtmfdecode(S, F, T)
     for i = 1:length(F)
         for j = 1:length(T)
             % Height treshold
-            if abs(S(i, j)) < 80
+            if abs(S(i, j)) < 30
                 continue;
             end
             
@@ -81,6 +84,45 @@ function keys_str = dtmfdecode(S, F, T)
     % Retrieve peak indexes in frequency (row) and time (col)
     [row,col] = find(true_peaks);
     
+    % Search for noise / false peaks
+    i = 1;
+    while i <= (length(row)-1)
+        % Remove single peaks
+        if col(i) ~= col(i+1)
+            if i == 1
+                true_peaks(i, j) = 0;
+                col(i) = [];
+                row(i) = [];
+                continue;
+            elseif col(i) == col(i-1)
+                i = i + 1;
+                continue;
+            else
+                true_peaks(i, j) = 0;
+                col(i) = [];
+                row(i) = [];
+                continue;
+            end
+        end
+        
+        % Remove false peaks (near true peaks)
+        if abs(F(row(i)) - F(row(i+1)))*1000 < noise_thr && col(i) == col(i+1)
+            if abs(S(row(i), col(j))) < abs(S(row(i+1), col(j+1)))
+                true_peaks(i, j) = 0;
+                col(i) = [];
+                row(i) = [];
+                continue;
+            else
+                true_peaks(i+1, j+1) = 0;
+                col(i+1) = [];
+                row(i+1) = [];
+                continue;
+            end
+        end
+        
+        i = i + 1;
+    end
+    
     % Detect keys based on the peaks' frequencies
     for i = 1:2:length(row)
        if abs(F(row(i))*1000 - F11) < freq_thr
@@ -129,4 +171,14 @@ function keys_str = dtmfdecode(S, F, T)
            
        end
     end
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    figure;
+    surf(T, F*1000, abs(S));
+    hold on 
+    
+    for i = 1:length(row)
+         plot3(T(col(i)),F(row(i))*1000,abs(S(row(i), col(i))),'r*','MarkerSize',24)
+    end
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
